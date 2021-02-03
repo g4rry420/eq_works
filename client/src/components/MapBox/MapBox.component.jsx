@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 import MapGl, { FlyToInterpolator,
     Source, Layer, Popup, Marker, ScaleControl,
     FullscreenControl, NavigationControl, GeolocateControl } from "react-map-gl"
-// import 'mapbox-gl/dist/mapbox-gl.css';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 import "./MapBox.styles.css"
 import ControlPanel from "./ControlPanel/ControlPanel.component"
