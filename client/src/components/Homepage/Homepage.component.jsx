@@ -51,7 +51,6 @@ const Homepage = (props) => {
     let newText = text.replace(new RegExp(searchField, "gi"), match => `<mark>${match}</mark>`);
     container.innerHTML = newText
     }
-    console.log((dailyEvents !== null) && (hourlyEvents !== null) && (statsDaily !== null) && (statsHourly !== null) && (poi !== null))
     return (
         <div>
         {

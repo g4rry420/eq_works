@@ -1,16 +1,19 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, Suspense, lazy } from 'react'
 import { connect } from "react-redux"
 import { Route, Switch } from "react-router-dom"
 
 
 import './App.css';
 import { getDailyEventsAsync, getHourlyEventsAsync, getStatsDailyAsync, getStatsHourlyAsync, getPoiAsync } from "./actions/apiActions"
-import Homepage from "./components/Homepage/Homepage.component"
-import EventsDaily from "./components/EventsDaily/EventsDaily.component"
-import EventsHourly from "./components/EventsHourly/EventsHourly.component"
-import StatsDaily from "./components/StatsDaily/StatsDaily.component"
-import StatsHourly from "./components/StatsHourly/StatsHourly.component"
-import MapBox from "./components/MapBox/MapBox.component"
+import ErrorBoundary from "./components/error-boundary/error-boundary.component"
+import Spinner from './components/spinner/spinner.component';
+
+const MapBox = lazy(() => import("./components/MapBox/MapBox.component"));
+const StatsHourly = lazy(() => import("./components/StatsHourly/StatsHourly.component"));
+const StatsDaily = lazy(() => import("./components/StatsDaily/StatsDaily.component"));
+const EventsDaily = lazy(() => import("./components/EventsDaily/EventsDaily.component"))
+const EventsHourly = lazy(() => import("./components/EventsHourly/EventsHourly.component"))
+const Homepage = lazy(() => import("./components/Homepage/Homepage.component"));
 
 function App(props) {
   const { getDailyEventsAsync, getHourlyEventsAsync, getStatsDailyAsync, getStatsHourlyAsync, getPoiAsync  } = props;
@@ -25,17 +28,21 @@ function App(props) {
 
   return (
     <div className="App">
-      <div className="app-heading">
-        <h1>Welcome to EQ Works 😎</h1>
-      </div>
-      <Switch>
-        <Route exact path="/" component={Homepage} />
-        <Route exact path="/events/daily" component={EventsDaily} />
-        <Route exact path="/events/hourly" component={EventsHourly} />
-        <Route exact path="/stats/daily" component={StatsDaily} />
-        <Route exact path="/stats/hourly" component={StatsHourly} />
-        <Route exact path="/map" component={MapBox} />
-      </Switch>
+      <ErrorBoundary>
+        <div className="app-heading">
+          <h1>Welcome to EQ Works 😎</h1>
+        </div>
+        <Suspense fallback={<Spinner/>}>
+          <Switch>
+            <Route exact path="/" component={Homepage} />
+            <Route exact path="/events/daily" component={EventsDaily} />
+            <Route exact path="/events/hourly" component={EventsHourly} />
+            <Route exact path="/stats/daily" component={StatsDaily} />
+            <Route exact path="/stats/hourly" component={StatsHourly} />
+            <Route exact path="/map" component={MapBox} />
+          </Switch>
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 }
