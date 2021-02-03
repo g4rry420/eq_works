@@ -1,3 +1,22 @@
 .marker-input-container input{
     cursor: pointer;
 }
+
+.cluster-marker {
+    color: #fff;
+    background: rgb(148, 133, 133);
+    border-radius: 50%;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .crime-marker {
+    background: none;
+    border: none;
+  }
+  
+  .crime-marker img {
+    width: 25px;
+  }

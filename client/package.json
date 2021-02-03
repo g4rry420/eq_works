@@ -15,6 +15,8 @@
     "react-scripts": "4.0.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "supercluster": "^7.1.2",
+    "use-supercluster": "^0.2.9",
     "web-vitals": "^0.2.4"
   },
   "scripts": {
@@ -40,5 +42,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "redux-logger": "^3.0.6"
   }
 }

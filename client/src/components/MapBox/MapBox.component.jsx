@@ -1,14 +1,16 @@
 import React,{ useRef, useState, useCallback } from 'react'
 import { connect } from "react-redux"
+import useSupercluster from "use-supercluster"
 import MapGl, { FlyToInterpolator,
-    Source, Layer, Popup, ScaleControl,
-    FullscreenControl, NavigationControl, GeolocateControl } from "react-map-gl"
+     Popup, ScaleControl,
+    FullscreenControl, NavigationControl, GeolocateControl, Marker } from "react-map-gl"
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 import "./MapBox.styles.css"
 import ControlPanel from "./ControlPanel/ControlPanel.component"
-import { clusterLayer, clusterCountLayer, unclusteredPointLayer } from "./Layers/Layers"
+// import { clusterLayer, clusterCountLayer, unclusteredPointLayer } from "./Layers/Layers"
 import Spinner from "../spinner/spinner.component"
+import { ReactComponent as LocationLogo } from "../../assets/geo-alt-fill.svg"
 
 const geolocateStyle = {
   top: 0,
@@ -34,6 +36,7 @@ const scaleControlStyle = {
   padding: '10px'
 };
 
+const positionOptions = {enableHighAccuracy: true};
 
 function MapBox(props) {
   const mapRef = useRef();
@@ -47,7 +50,6 @@ function MapBox(props) {
   })
 
   const [popupDisplay, setPopupDisplay] = useState(null);
-  const [radioButton, setRadioButton] = useState("");
 
   const geojson = {
     features: []
@@ -74,60 +76,71 @@ function MapBox(props) {
   }, []);
 
 
-  const handleMapClick = (event) => {
-    const feature = event.features[0];
-    if(!!!feature) return;
-    const clusterId = feature.properties.cluster_id;
+  // const handleMapClick = (event) => {
+  //   const feature = event.features[0];
+  //   if(!!!feature) return;
+  //   const clusterId = feature.properties.cluster_id;
 
-    const mapBoxSource = mapRef.current.getMap().getSource("eventsAndStats");
+  //   const mapBoxSource = mapRef.current.getMap().getSource("eventsAndStats");
 
-    mapBoxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
-      if(err){
-        return console.log("Error in handleMapClick")
-      }
+  //   mapBoxSource.getClusterExpansionZoom(clusterId, (err, zoom) => {
+  //     if(err){
+  //       return console.log("Error in handleMapClick")
+  //     }
 
-      setViewport({
-        ...viewport,
-        longitude: feature.geometry.coordinates[0],
-        latitude: feature.geometry.coordinates[1],
-        zoom,
-        transitionDuration: 500
+  //     setViewport({
+  //       ...viewport,
+  //       longitude: feature.geometry.coordinates[0],
+  //       latitude: feature.geometry.coordinates[1],
+  //       zoom,
+  //       transitionDuration: 500
+  //     })
+
+  //   })
+  // }
+
+  // load and prepare data
+  const points = [];
+  if(props.poi && !props.error){
+    for (let index = 0; index < props.poi.length; index++) {
+      const element = props.poi[index];
+      points.push({
+        type: "Feature",
+        properties: { cluster: false, poi_id: element.poi_id, name: element.name },
+        geometry: {
+          type: "Point",
+          coordinates: [element.lon, element.lat]
+        }
       })
+    }
+  }
+  // get map bounds
+  let bounds;
+  if(mapRef.current){
+    bounds = mapRef.current.getMap().getBounds().toArray().flat();
+  }else{
+    bounds = []
+  }
+  // get clusters
+  const { clusters, supercluster } = useSupercluster({
+    points,
+    bounds,
+    zoom: viewport.zoom,
+    options: { radius: 75, maxZoom: 20 }
+  })
 
+  const handleClusterClick = (cluster) => {
+    const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id), 20);
+    setViewport({
+      ...viewport,
+      latitude: cluster.geometry.coordinates[1],
+      longitude: cluster.geometry.coordinates[0],
+      zoom: expansionZoom,
+      transitionInterpolator: new FlyToInterpolator({ speed: 1.2 }),
+      transitionDuration: "auto"
     })
   }
 
-  // load and prepare data
-  // const points = [];
-  // if(props.poi && !props.error){
-  //   for (let index = 0; index < props.poi.length; index++) {
-  //     const element = props.poi[index];
-  //     points.push({
-  //       type: "Feature",
-  //       properties: { cluster: false, poi_id: element.poi_id, name: element.name },
-  //       geometry: {
-  //         type: "Point",
-  //         coordinates: [element.lon, element.lat]
-  //       }
-  //     })
-  //   }
-  // }
-  // get map bounds
-  // let bounds;
-  // if(mapRef.current){
-  //   bounds = mapRef.current.getMap().getBounds().toArray().flat();
-  // }else{
-  //   bounds = []
-  // }
-  // // get clusters
-  // const { clusters, supercluster } = useSupercluster({
-  //   points,
-  //   bounds,
-  //   zoom: viewport.zoom,
-  //   options: { radius: 75, maxZoom: 20 }
-  // })
-
-  // console.log({ points, clusters })
   // return map
   return (
     <div>
@@ -141,12 +154,12 @@ function MapBox(props) {
         height="100vh"
         mapStyle={"mapbox://styles/gurkiransinghk/ckko751ud0rar17n5418ugu9y"}
         mapboxApiAccessToken={process.env.NODE_ENV === "development" ? "" : process.env.REACT_APP_MAPBOX_TOKEN}
-        interactiveLayerIds={[clusterLayer.id]}
+        // interactiveLayerIds={[clusterLayer.id]}
         ref={mapRef}
-        onClick={handleMapClick}
+        // onClick={handleMapClick}
         >
 
-        <Source
+        {/*<Source
           id="eventsAndStats"
           type="geojson"
           data={geojson}
@@ -156,17 +169,51 @@ function MapBox(props) {
           <Layer { ...clusterLayer } />
           <Layer { ...clusterCountLayer } />
           <Layer { ...unclusteredPointLayer } />
-        </Source>
+        </Source>*/}
 
-        {/*
-          props.poi && props.poi.map(data => (
-            <Marker latitude={data.lat} longitude={data.lon} key={data.poi_id}>
-              <div style={{color: "transparent", cursor: "pointer", visibility: ""}} onClick={() => handleOpenPopUp(data)}>
-                hello
-              </div>
-            </Marker>
-          ))
-          */}
+        
+
+        {
+          clusters && clusters.map(cluster => {
+            const [longitude, latitude] = cluster.geometry.coordinates;
+            const { cluster: isCluster, point_count, name } = cluster.properties;
+
+            if(isCluster) {
+              return (
+                <Marker key={cluster.id} latitude={latitude} longitude={longitude}>
+                  <div 
+                    className="cluster-marker"
+                    onClick={() => handleClusterClick(cluster)}
+                    style={{ 
+                    width: `${10 + (point_count / points.length) * 20}px`,
+                    height: `${10 + (point_count / points.length) * 20}px`,
+                    cursor: "pointer"}}>
+                    {point_count}
+                  </div>
+                </Marker>
+              )
+            }
+
+            return (
+              <Marker 
+                key={cluster.properties.poi_id}
+                latitude={latitude}
+                longitude={longitude}>
+                <div style={{color: "white", cursor: "pointer"}} onClick={() => {
+                  const data = {
+                    name: name,
+                    lat: latitude,
+                    lon: longitude,
+                  }
+                  setPopupDisplay(data)
+                }}>
+                  <LocationLogo/>
+                </div>
+              </Marker>
+            )
+
+          })
+          }
         {
           popupDisplay && (
             <Popup latitude={popupDisplay.lat} longitude={popupDisplay.lon} onClose={() => setPopupDisplay(null)}>
@@ -174,11 +221,11 @@ function MapBox(props) {
             </Popup>
           )
         }
-        <GeolocateControl style={geolocateStyle} />
+        <GeolocateControl style={geolocateStyle} positionOptions={positionOptions} trackUserLocation />
         <FullscreenControl style={fullscreenControlStyle} />
         <NavigationControl style={navStyle} />
         <ScaleControl style={scaleControlStyle} />
-        <ControlPanel onSelectCity={onSelectCity} radioButton={radioButton} setRadioButton={radioButton} />
+        <ControlPanel onSelectCity={onSelectCity}  />
       </MapGl>
         ) : props.error ? <p style={{textAlign: "center"}}> {props.error} </p> : <Spinner/>
       }

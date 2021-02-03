@@ -3,7 +3,7 @@ import { connect } from "react-redux"
 
 import "./ControlPanel.styles.css"
 
-function ControlPanel({ poi, onSelectCity, radioButton, error, setRadioButton, handleRadioButtonChange }) {
+function ControlPanel({ poi, onSelectCity, error }) {
   return (
     <div className="control-panel">
       <h3>Select Your POI's</h3>
@@ -15,7 +15,6 @@ function ControlPanel({ poi, onSelectCity, radioButton, error, setRadioButton, h
             type="radio"
             name="city"
             id={data.poi_id}
-            defaultChecked={radioButton}
             onClick={() => onSelectCity(data)}
           />
           <label htmlFor={`city-${index}`}>{data.name}</label>
