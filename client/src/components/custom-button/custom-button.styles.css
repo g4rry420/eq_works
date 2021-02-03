@@ -1,0 +1,29 @@
+.btn{
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    cursor: pointer;
+}
+.custom-button{
+    background-color: powderblue;  
+    color: black;
+    transition: var(--mainTransition);
+    border: 1px solid powderblue;
+    font-weight: 600;
+}
+.custom-button:hover {
+    background: transparent;
+    color: powderblue;
+}
