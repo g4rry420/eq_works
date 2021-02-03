@@ -98,20 +98,20 @@ function MapBox(props) {
   }
 
   // load and prepare data
-  const points = [];
-  if(props.poi && !props.error){
-    for (let index = 0; index < props.poi.length; index++) {
-      const element = props.poi[index];
-      points.push({
-        type: "Feature",
-        properties: { cluster: false, poi_id: element.poi_id, name: element.name },
-        geometry: {
-          type: "Point",
-          coordinates: [element.lon, element.lat]
-        }
-      })
-    }
-  }
+  // const points = [];
+  // if(props.poi && !props.error){
+  //   for (let index = 0; index < props.poi.length; index++) {
+  //     const element = props.poi[index];
+  //     points.push({
+  //       type: "Feature",
+  //       properties: { cluster: false, poi_id: element.poi_id, name: element.name },
+  //       geometry: {
+  //         type: "Point",
+  //         coordinates: [element.lon, element.lat]
+  //       }
+  //     })
+  //   }
+  // }
   // get map bounds
   // let bounds;
   // if(mapRef.current){
@@ -139,7 +139,6 @@ function MapBox(props) {
         maxZoom={20}
         width="100vw"
         height="100vh"
-        mapStyle="mapbox://styles/gurkiransinghk/ckko751ud0rar17n5418ugu9y" 
         mapboxApiAccessToken={process.env.NODE_ENV === "development" ? "pk.eyJ1IjoiZ3Vya2lyYW5zaW5naGsiLCJhIjoiY2trbjJraXczMDVmYjJvcDU1bDRhMThjeCJ9._2ac1Xjtc_0ahJDnxHtU9A" : process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[clusterLayer.id]}
         ref={mapRef}
