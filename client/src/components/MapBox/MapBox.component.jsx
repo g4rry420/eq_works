@@ -115,12 +115,13 @@ function MapBox(props) {
     }
   }
   // get map bounds
-  let bounds;
-  if(mapRef.current){
-    bounds = mapRef.current.getMap().getBounds().toArray().flat();
-  }else{
-    bounds = []
-  }
+  const bounds = mapRef.current
+  ? mapRef.current
+      .getMap()
+      .getBounds()
+      .toArray()
+      .flat()
+  : null;
   // get clusters
   const { clusters, supercluster } = useSupercluster({
     points,
@@ -153,9 +154,9 @@ function MapBox(props) {
         width="100vw"
         height="100vh"
         mapStyle={"mapbox://styles/gurkiransinghk/ckko751ud0rar17n5418ugu9y"}
-        mapboxApiAccessToken={process.env.NODE_ENV === "development" ? "" : process.env.REACT_APP_MAPBOX_TOKEN}
-        // interactiveLayerIds={[clusterLayer.id]}
+        mapboxApiAccessToken={process.env.NODE_ENV === "development" ? "pk.eyJ1IjoiZ3Vya2lyYW5zaW5naGsiLCJhIjoiY2trbjJraXczMDVmYjJvcDU1bDRhMThjeCJ9._2ac1Xjtc_0ahJDnxHtU9A" : process.env.REACT_APP_MAPBOX_TOKEN}
         ref={mapRef}
+        // interactiveLayerIds={[clusterLayer.id]}
         // onClick={handleMapClick}
         >
 
