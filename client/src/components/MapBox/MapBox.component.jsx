@@ -1,7 +1,7 @@
 import React,{ useRef, useState, useCallback } from 'react'
 import { connect } from "react-redux"
 import MapGl, { FlyToInterpolator,
-    Source, Layer, Popup, Marker, ScaleControl,
+    Source, Layer, Popup, ScaleControl,
     FullscreenControl, NavigationControl, GeolocateControl } from "react-map-gl"
 import 'mapbox-gl/dist/mapbox-gl.css';
 
