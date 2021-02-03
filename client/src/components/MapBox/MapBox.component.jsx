@@ -139,6 +139,7 @@ function MapBox(props) {
         maxZoom={20}
         width="100vw"
         height="100vh"
+        mapStyle={"mapbox://styles/gurkiransinghk/ckko751ud0rar17n5418ugu9y"}
         mapboxApiAccessToken={process.env.NODE_ENV === "development" ? "pk.eyJ1IjoiZ3Vya2lyYW5zaW5naGsiLCJhIjoiY2trbjJraXczMDVmYjJvcDU1bDRhMThjeCJ9._2ac1Xjtc_0ahJDnxHtU9A" : process.env.REACT_APP_MAPBOX_TOKEN}
         interactiveLayerIds={[clusterLayer.id]}
         ref={mapRef}
