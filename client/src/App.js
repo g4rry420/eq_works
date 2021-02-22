@@ -7,6 +7,7 @@ import './App.css';
 import { getDailyEventsAsync, getHourlyEventsAsync, getStatsDailyAsync, getStatsHourlyAsync, getPoiAsync } from "./actions/apiActions"
 import ErrorBoundary from "./components/error-boundary/error-boundary.component"
 import Spinner from './components/spinner/spinner.component';
+import Header from "./components/Header/header.component"
 
 const MapBox = lazy(() => import("./components/MapBox/MapBox.component"));
 const StatsHourly = lazy(() => import("./components/StatsHourly/StatsHourly.component"));
@@ -29,6 +30,7 @@ function App(props) {
   return (
     <div className="App">
       <ErrorBoundary>
+        <Header/>
         <div className="app-heading">
           <h1>Welcome to EQ Works 😎</h1>
         </div>
