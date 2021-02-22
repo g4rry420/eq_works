@@ -12,6 +12,7 @@
     color: #6b6b76;
     text-transform: uppercase;
     outline: none;
+    text-align: left;
 }
 .control-panel input{
     cursor: pointer;

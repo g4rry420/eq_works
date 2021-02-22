@@ -39,11 +39,11 @@ const scaleControlStyle = {
 const positionOptions = {enableHighAccuracy: true};
 
 function MapBox(props) {
-  const { statsHourly, error, poi } = props;
+  const { statsHourly, error, poi, hourlyEvents } = props;
   const mapRef = useRef();
 
-  const [selectValue, setSelectValue] = useState("clicks")
-  const [currentMapState, setCurrentMapState] = useState([]);
+  const [selectValue, setSelectValue] = useState("impressions")
+  const [points, setPoints] = useState([]);
 
   const [viewport, setViewport] = useState({
     latitude: 48.970874,
@@ -56,7 +56,7 @@ function MapBox(props) {
   const [popupDisplay, setPopupDisplay] = useState(null);
 
   useEffect(() => {
-    if(statsHourly && poi && !error){
+      if(statsHourly && poi && !error){
       let data = [];
       // statsHourly.forEach(hourly => {
       //   Object.keys(hourly).filter(key => {
@@ -86,7 +86,7 @@ function MapBox(props) {
             cluster: false,
             id: poi.poi_id,
             name: poi.name,
-            [selectValue]: sumOfValues(poi.name),
+            [selectValue]: sumOfValues(poi.name, selectValue),
             lat: poi.lat,
             lon: poi.lon
           },
@@ -96,12 +96,12 @@ function MapBox(props) {
           }
         })
       })
-      setCurrentMapState(data)
+      setPoints(data)
     }else if(error){
       console.log(error)
     }
-  }, [statsHourly, selectValue])  
-
+  }, [poi, statsHourly, selectValue])  
+  
   const onSelectCity = useCallback((data) => {
     setViewport({
       longitude: data.lon,
@@ -115,18 +115,11 @@ function MapBox(props) {
 
 
   // load and prepare data
-
   // get map bounds
-  const bounds = mapRef.current
-  ? mapRef.current
-      .getMap()
-      .getBounds()
-      .toArray()
-      .flat()
-  : null;
+  const bounds = mapRef.current ? mapRef.current.getMap() && mapRef.current.getMap().getBounds().toArray().flat() : null;
   // get clusters
   const { clusters, supercluster } = useSupercluster({
-    points: currentMapState,
+    points,
     bounds,
     zoom: viewport.zoom,
     options: { 
@@ -156,15 +149,6 @@ function MapBox(props) {
      }
   })
 
-  // clusters.forEach(cluster => console.log(cluster))
-
-  statsHourly && statsHourly.reduce((acc, curr) => {
-    // if(curr.name === "Niagara Falls"){
-      // console.log(acc + "  " + curr.clicks);
-      return acc + curr.clicks
-    // }
-  },0)
-
   const groupBy = (objectArray, property, selectData) => {
     const namesArray = objectArray.reduce((acc, currObj) => {
       const key = currObj[property]
@@ -184,21 +168,28 @@ function MapBox(props) {
     //   }, 0)
     // })
   }
-
-  function sumOfValues(name){
-    if(!!!statsHourly) return;
+  function sumOfValues(name, value){
+    if(statsHourly && value !== "events"){
     return statsHourly.reduce((acc, currObj) => {
-      if(currObj.name === name){
-        return acc + currObj[selectValue]
-      }
-      return acc
-    }, 0)
+        if((currObj.name === name) && (value !== "revenue")){
+          return acc + currObj[value];
+        }else if(value === "revenue"){
+          return acc + Math.floor(currObj[value])
+        }
+        return acc
+      }, 0)
+    }else if(value === "events" && hourlyEvents) {
+      return hourlyEvents.reduce((acc, currObj) => {
+        if((currObj.name === name)){
+          return acc + currObj[value];
+        }
+        return acc
+      }, 0)
+    }
   }
 
-  // statsHourly && groupBy(statsHourly, "name", "clicks")
-
   const handleClusterClick = (cluster) => {
-    const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id), 16);
+    const expansionZoom = Math.min(supercluster.getClusterExpansionZoom(cluster.id), 20);
     setViewport({
       ...viewport,
       latitude: cluster.geometry.coordinates[1],
@@ -215,98 +206,97 @@ function MapBox(props) {
   // return map
   return (
     <div>
-    <select style={{margin: "2rem"}} name="charts" id="charts" onChange={handleMapValueChange} value={selectValue}>
-      <option value="impressions">Impressions</option>
-      <option value="clicks">Clicks</option>
-      <option value="revenue">Revenue</option>
-      <option value="events">Events</option>
-    </select>
+      <select style={{margin: "2rem"}} name="charts" id="charts" onChange={handleMapValueChange} value={selectValue}>
+        <option value="impressions">Impressions</option>
+        <option value="clicks">Clicks</option>
+        <option value="revenue">Revenue</option>
+        <option value="events">Events</option>
+      </select>
       {
         ((props.poi !== null) && (props.statsHourly) && (props.error === null)) ? (
-        <MapGl 
-        {...viewport} 
-        onViewportChange={setViewport}
-        maxZoom={20}
-        width="100vw"
-        height="100vh"
-        mapStyle={"mapbox://styles/gurkiransinghk/ckko751ud0rar17n5418ugu9y"}
-        mapboxApiAccessToken={process.env.NODE_ENV === "development" ? "pk.eyJ1IjoiZ3Vya2lyYW5zaW5naGsiLCJhIjoiY2trbjJraXczMDVmYjJvcDU1bDRhMThjeCJ9._2ac1Xjtc_0ahJDnxHtU9A" : process.env.REACT_APP_MAPBOX_TOKEN}
-        ref={mapRef}
-        >
+          <div className="map-container">
+            <MapGl 
+            {...viewport} 
+            onViewportChange={setViewport}
+            maxZoom={20}
+            width="80vw"
+            height="100vh"
+            mapStyle={"mapbox://styles/gurkiransinghk/ckko751ud0rar17n5418ugu9y"}
+            mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+            ref={mapRef}
+            >
+            {
+              clusters && clusters.map((cluster) => {
+                const [longitude, latitude] = cluster.geometry.coordinates;
+                const { cluster: isCluster,
+                  point_count,
+                    name
+                  } = cluster.properties;
+                if(isCluster) {
+                  return (
+                    <Marker 
+                      key={cluster.id}
+                      latitude={latitude} longitude={longitude}>
+                      <div 
+                        className="cluster-marker"
+                        onClick={() => handleClusterClick(cluster)}
+                        style={{ 
+                        width: `${10 + (point_count / points.length) * 30}px`,
+                        height: `${10 + (point_count / points.length) * 30}px`,
+                        cursor: "pointer"}}>
+                        {`${point_count} POI's`}
+                      </div>
+                    </Marker>
+                  )
+                }else if(cluster.properties[selectValue]){
+                  const widthAndHeight = cluster.properties[selectValue].toString().length > 5
+                  ? parseInt(cluster.properties[selectValue].toString().substring(0, 3))
+                  : cluster.properties[selectValue].toString().length > 2    
+                  ? parseInt(cluster.properties[selectValue].toString().substring(0, 2))
+                  : point_count
 
-        
-
-        {
-          clusters && clusters.map((cluster, index) => {
-            const [longitude, latitude] = cluster.geometry.coordinates;
-            const { cluster: isCluster,
-               point_count,
-                name, clicks
-               } = cluster.properties;
-            // const { clicks, lat, lon, name } = cluster.properties.poi
-            console.log({point_count, clicks})
-            if(isCluster) {
-              return (
-                <Marker 
-                  // key={cluster.id}
-                  key={index}
-                  latitude={latitude} longitude={longitude}>
-                  <div 
-                    className="cluster-marker"
-                    onClick={() => handleClusterClick(cluster)}
-                    style={{ 
-                    width: `${10 + (point_count / currentMapState.length) * 30}px`,
-                    height: `${10 + (point_count / currentMapState.length) * 30}px`,
-                    cursor: "pointer"}}>
-                    {`${point_count} POI's`}
-                  </div>
-                </Marker>
+                  return (
+                    <Marker 
+                      key={cluster.properties.id}
+                      latitude={latitude}
+                      longitude={longitude}>
+                      <div style={{color: "white", cursor: "pointer"}} onClick={() => {
+                        const data = {
+                          name: name,
+                          lat: latitude,
+                          lon: longitude,
+                        }
+                        setPopupDisplay(data)
+                      }}>
+                        {/*<LocationLogo/>*/}
+                        <div 
+                          className="cluster-marker"
+                          style={{ 
+                          width: `${( widthAndHeight / points.length) - 10}px`,
+                          height: `${(widthAndHeight / points.length) - 10}px`,
+                          cursor: "pointer"}}>
+                          {cluster.properties[selectValue]}
+                        </div>
+                      </div>
+                    </Marker>
+                  )
+                }
+              })
+              }
+            {
+              popupDisplay && (
+                <Popup latitude={popupDisplay.lat} longitude={popupDisplay.lon} onClose={() => setPopupDisplay(null)}>
+                  <div> {popupDisplay.name} </div>
+                </Popup>
               )
             }
-
-            return (
-              <Marker 
-                // key={cluster.properties.poi_id}
-                key={index}
-                latitude={latitude}
-                longitude={longitude}>
-                <div style={{color: "white", cursor: "pointer"}} onClick={() => {
-                  const data = {
-                    name: name,
-                    lat: latitude,
-                    lon: longitude,
-                  }
-                  setPopupDisplay(data)
-                }}>
-                  {/*<LocationLogo/>*/}
-                  <div 
-                    className="cluster-marker"
-                    onClick={() => handleClusterClick(cluster)}
-                    style={{ 
-                    width: `${10 + (point_count / currentMapState.length) * 10}px`,
-                    height: `${10 + (point_count / currentMapState.length) * 10}px`,
-                    cursor: "pointer"}}>
-                    {clicks}
-                  </div>
-                </div>
-              </Marker>
-            )
-
-          })
-          }
-        {
-          popupDisplay && (
-            <Popup latitude={popupDisplay.lat} longitude={popupDisplay.lon} onClose={() => setPopupDisplay(null)}>
-              <div> {popupDisplay.name} </div>
-            </Popup>
-          )
-        }
-        <GeolocateControl style={geolocateStyle} positionOptions={positionOptions} trackUserLocation />
-        <FullscreenControl style={fullscreenControlStyle} />
-        <NavigationControl style={navStyle} />
-        <ScaleControl style={scaleControlStyle} />
-        <ControlPanel onSelectCity={onSelectCity}  />
-      </MapGl>
+            <GeolocateControl style={geolocateStyle} positionOptions={positionOptions} trackUserLocation />
+            <FullscreenControl style={fullscreenControlStyle} />
+            <NavigationControl style={navStyle} />
+            <ScaleControl style={scaleControlStyle} />
+            <ControlPanel onSelectCity={onSelectCity}  />
+          </MapGl>
+        </div>
         ) : props.error ? <p style={{textAlign: "center"}}> {props.error} </p> : <Spinner/>
       }
     </div>
@@ -316,7 +306,8 @@ function MapBox(props) {
 const mapStateToProps = state => ({
   poi: state.api.poi,
   error: state.api.error,
-  statsHourly: state.api.statsHourly
+  statsHourly: state.api.statsHourly,
+  hourlyEvents: state.api.hourlyEvents
 })
 
 export default connect(mapStateToProps, null)(MapBox)
