@@ -25,3 +25,6 @@
   text-align: center;
   text-align: -webkit-center;
 }
+.calender-container, .hour-container{
+  margin: 2rem 2rem;
+}
