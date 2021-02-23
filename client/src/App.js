@@ -31,9 +31,9 @@ function App(props) {
     <div className="App">
       <ErrorBoundary>
         <Header/>
-        <div className="app-heading">
+        {/*<div className="app-heading">
           <h1>Welcome to EQ Works 😎</h1>
-        </div>
+  </div>*/}
         <Suspense fallback={<Spinner/>}>
           <Switch>
             <Route exact path="/" component={Homepage} />

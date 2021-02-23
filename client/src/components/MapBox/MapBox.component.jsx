@@ -1,4 +1,4 @@
-import React,{ useRef, useState, useCallback, useEffect, Fragment } from 'react'
+import React,{ useRef, useState, useCallback, useEffect } from 'react'
 import { connect } from "react-redux"
 import useSupercluster from "use-supercluster"
 import MapGl, { FlyToInterpolator,
@@ -8,10 +8,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import "./MapBox.styles.css"
 import ControlPanel from "./ControlPanel/ControlPanel.component"
-// import { clusterLayer, clusterCountLayer, unclusteredPointLayer } from "./Layers/Layers"
 import Spinner from "../spinner/spinner.component"
 import { date } from "../../dateAndTime"
-// import { ReactComponent as LocationLogo } from "../../assets/geo-alt-fill.svg"
 
 const geolocateStyle = {
   top: 0,
@@ -210,118 +208,123 @@ const MapBox = (props) => {
     setToHourValue(e.target.value)
     setPoints([])
   }
-
-  // console.log({clusters, points})
-  // console.log(fromHourValue, toHourValue)
   const maxDate = statsHourly && date(statsHourly[statsHourly.length-1].date);
   // return map
   return (
-    <div>
-      <select style={{margin: "2rem"}} name="charts" id="charts" onChange={handleMapValueChange} value={selectValue}>
-        <option value="impressions">Impressions</option>
-        <option value="clicks">Clicks</option>
-        <option value="revenue">Revenue</option>
-        <option value="events">Events</option>
-      </select>
-      {
-        ((props.poi !== null) && (props.statsHourly !== null) && (props.error === null)) ? (
-          <Fragment>
-          <div className="calender-container">
-            <input type="date" name="fromDate" min="2016-12-31" max={maxDate} value={fromDateValue} onChange={handleFromDateChange}  />
-            <input ref={toDateRef} type="date" name="toDate" min="2016-12-31" max={maxDate} value={toDateValue} onChange={handleToDateChange} />
+    <div className="container">
+      <div className="row">
+        <div className="col-md-12">
+          <div className="text-center my-3">
+            <h4 className="display-4">Map Visuals</h4>
           </div>
-          <div className="hour-container">
-            <input type="number" name="fromHour" min="0" max="23" value={fromHourValue} onChange={handleFromHourChange}  />
-            <input type="number" name="ToHour" min="0" max="23" value={toHourValue} onChange={handleToHourChange} />
+          <div className="select-container">
+            <h4 className="display-4">Select Your Metrics:</h4>
+            <select name="charts" id="charts" onChange={handleMapValueChange} value={selectValue}>
+              <option value="impressions">Impressions</option>
+              <option value="clicks">Clicks</option>
+              <option value="revenue">Revenue</option>
+              <option value="events">Events</option>
+            </select>
+          </div>
+          <div className="date-hour-container my-4">
+            <h4 className="display-4">Select Your Date and Hour Range:</h4>
+            <div className="calender-container my-4">
+              <label htmlFor="fromDate" className="">From Date</label>
+              <input type="date" name="fromDate" id="fromDate" min="2016-12-31" max={maxDate} value={fromDateValue} onChange={handleFromDateChange}  />
+              <label htmlFor="fromHour" className="">Hour</label>
+              <input type="number" id="fromHour" name="fromHour" min="0" max="23" value={fromHourValue} onChange={handleFromHourChange}  />
             </div>
-          <div className="map-container">
-            <MapGl 
-            {...viewport} 
-            onViewportChange={setViewport}
-            maxZoom={20}
-            width="80vw"
-            height="100vh"
-            mapStyle={"mapbox://styles/gurkiransinghk/ckko751ud0rar17n5418ugu9y"}
-            mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-            ref={mapRef}
-            >
-            {
-              clusters && clusters.map((cluster) => {
-                const [longitude, latitude] = cluster.geometry.coordinates;
-                const { cluster: isCluster,
-                  point_count,
-                    name,fromDateValue,
-                    toDateValue
-                  } = cluster.properties;
-                  // console.log(cluster.properties[selectValue])
-                if(isCluster) {
-                  return (
-                    <Marker 
-                      key={cluster.id}
-                      latitude={latitude} longitude={longitude}>
-                      <div 
-                        className="cluster-marker"
-                        onClick={() => handleClusterClick(cluster)}
-                        style={{ 
-                        width: `${10 + (point_count / points.length) * 30}px`,
-                        height: `${10 + (point_count / points.length) * 30}px`,
-                        cursor: "pointer"}}>
-                        {`${point_count} POI's`}
-                      </div>
-                    </Marker>
-                  )
-                }else if(cluster.properties[selectValue]){  
-                  const widthAndHeight = cluster.properties[selectValue].toString().length > 5
-                  ? parseInt(cluster.properties[selectValue].toString().substring(0, 3))
-                  : cluster.properties[selectValue].toString().length > 2    
-                  ? parseInt(cluster.properties[selectValue].toString().substring(0, 2))
-                  : point_count
-
-                  return (
-                    <Marker 
-                      key={cluster.properties.id}
-                      latitude={latitude}
-                      longitude={longitude}>
-                      <div style={{color: "white", cursor: "pointer"}} onClick={() => {
-                        const data = {
-                          name: name,
-                          lat: latitude,
-                          lon: longitude,
-                        }
-                        setPopupDisplay(data)
-                      }}>
+            <div className="hour-container">
+              <label htmlFor="toDate" className="">To Date</label>
+              <input ref={toDateRef} id="toDate" type="date" name="toDate" min="2016-12-31" max={maxDate} value={toDateValue} onChange={handleToDateChange} />
+              <label htmlFor="toHour" className="">Hour</label>
+              <input type="number" id="toHour" name="ToHour" min="0" max="23" value={toHourValue} onChange={handleToHourChange} />
+            </div>
+          </div>
+        {
+          ((props.poi !== null) && (props.statsHourly !== null) && (props.error === null)) ? (
+            <div className="map-container">
+              <MapGl 
+              {...viewport} 
+              onViewportChange={setViewport}
+              maxZoom={20}
+              width="80vw"
+              height="100vh"
+              mapStyle={"mapbox://styles/gurkiransinghk/ckko751ud0rar17n5418ugu9y"}
+              mapboxApiAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+              ref={mapRef}
+              >
+              {
+                clusters && clusters.map((cluster) => {
+                  const [longitude, latitude] = cluster.geometry.coordinates;
+                  const { cluster: isCluster,
+                    point_count,
+                      name
+                    } = cluster.properties;
+                  if(isCluster) {
+                    return (
+                      <Marker 
+                        key={cluster.id}
+                        latitude={latitude} longitude={longitude}>
                         <div 
-                          className="cluster-marker"
-                          style={{ 
-                          width: `${( widthAndHeight / points.length) - 10}px`,
-                          height: `${(widthAndHeight / points.length) - 10}px`,
-                          cursor: "pointer"}}>
-                          {/* console.log(cluster.properties[selectValue]) */}
-                          {cluster.properties[selectValue]}
+                          className="circle"
+                          id="poi-color"
+                          onClick={() => handleClusterClick(cluster)}>
+                          <span>
+                          {`${point_count} POI's`}
+                          </span>
                         </div>
-                      </div>
-                    </Marker>
-                  )
+                      </Marker>
+                    )
+                  }else if(cluster.properties[selectValue]){  
+                    const widthAndHeight = cluster.properties[selectValue].toString().length > 5
+                    ? parseInt(cluster.properties[selectValue].toString().substring(0, 3))
+                    : cluster.properties[selectValue].toString().length > 2    
+                    ? parseInt(cluster.properties[selectValue].toString().substring(0, 2))
+                    : point_count
+  
+                    return (
+                      <Marker 
+                        key={cluster.properties.id}
+                        latitude={latitude}
+                        longitude={longitude}>
+                        <div style={{color: "white", cursor: "pointer"}} onClick={() => {
+                          const data = {
+                            name: name,
+                            lat: latitude,
+                            lon: longitude,
+                          }
+                          setPopupDisplay(data)
+                        }}>
+                          <div className="circle" id="point-color">
+                            <span>
+                              {cluster.properties[selectValue]}
+                            </span>
+                          </div>
+                        </div>
+                      </Marker>
+                    )
+                  }
+                })
                 }
-              })
+              {
+                popupDisplay && (
+                  <Popup latitude={popupDisplay.lat} longitude={popupDisplay.lon} onClose={() => setPopupDisplay(null)}>
+                    <div> {popupDisplay.name} </div>
+                  </Popup>
+                )
               }
-            {
-              popupDisplay && (
-                <Popup latitude={popupDisplay.lat} longitude={popupDisplay.lon} onClose={() => setPopupDisplay(null)}>
-                  <div> {popupDisplay.name} </div>
-                </Popup>
-              )
-            }
-            <GeolocateControl style={geolocateStyle} positionOptions={positionOptions} trackUserLocation />
-            <FullscreenControl style={fullscreenControlStyle} />
-            <NavigationControl style={navStyle} />
-            <ScaleControl style={scaleControlStyle} />
-            <ControlPanel onSelectCity={onSelectCity}  />
-          </MapGl>
+              <GeolocateControl style={geolocateStyle} positionOptions={positionOptions} trackUserLocation />
+              <FullscreenControl style={fullscreenControlStyle} />
+              <NavigationControl style={navStyle} />
+              <ScaleControl style={scaleControlStyle} />
+              <ControlPanel onSelectCity={onSelectCity}  />
+            </MapGl>
+          </div>
+          ) : props.error ? <p style={{textAlign: "center"}}> {props.error} </p> : <Spinner/>
+        }
         </div>
-        </Fragment>
-        ) : props.error ? <p style={{textAlign: "center"}}> {props.error} </p> : <Spinner/>
-      }
+      </div>
     </div>
     )
 }

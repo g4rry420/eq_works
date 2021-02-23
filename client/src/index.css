@@ -6,6 +6,7 @@ body{
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
+    overflow-x: hidden !important;
 }
 mark{
     padding: 0;
@@ -51,4 +52,7 @@ td,th{
 }
 td{
     text-align: left;
+}
+mark{
+    background-color: yellow;
 }

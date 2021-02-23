@@ -6,13 +6,14 @@ import "./ControlPanel.styles.css"
 function ControlPanel({ poi, onSelectCity, error }) {
   return (
     <div className="control-panel">
-      <h3>Select Your POI's</h3>
+      <h5>Select Your POI's</h5>
       
 
       {((poi !== null) && (error === null) ) && poi.map((data, index) => (
         <div key={data.poi_id} className="input">
           <input
             type="radio"
+            className="mr-2"
             name="city"
             id={data.poi_id}
             onClick={() => onSelectCity(data)}
