@@ -1,0 +1,7 @@
+.pagination-container .page-link{
+    color: black;
+}
+.pagination-container .page-item.active .page-link{
+    background-color: black;
+    border-color: black;
+}

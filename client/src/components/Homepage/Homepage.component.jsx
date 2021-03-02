@@ -1,18 +1,37 @@
-import React,{ useEffect, useRef, Fragment, useState, memo } from 'react'
+import React,{ useEffect, useRef, Fragment, useState } from 'react'
 import { connect } from 'react-redux';
-import { Link } from "react-router-dom"
+import { Table } from "react-bootstrap"
 
 import "./Homepage.styles.css"
-import { dateAndTime } from "../../dateAndTime"
+import { date } from "../../dateAndTime"
 import Spinner from "../spinner/spinner.component"
-import CustomButton from "../custom-button/custom-button.component"
+import Pagination from "../Pagination/Pagination.component"
 
 const Homepage = (props) => {
     const [searchField, setSearchField] = useState("");
     const searchedNameRef = useRef();
     const searchedNameRowRef = useRef();
 
+    const [pagination, setPagination] = useState([]);
+    const [pagination2, setPagination2] = useState([]);
+    const [initialPagination, setInitialPagination] = useState(1);
+    const [initialPagination2, setInitialPagination2] = useState(1);
+
+    const numberOfRowsToShow = 20;
+
     const { dailyEvents, hourlyEvents, statsDaily, statsHourly, poi, error } = props;
+
+    useEffect(() => {
+        if(!!!hourlyEvents) return;
+
+        let data = [];
+        for (let index = 1; index <= Math.ceil(hourlyEvents.length / numberOfRowsToShow); index++) {
+            data.push(index)
+        }
+        setPagination(data)
+        setPagination2(data)
+    },[hourlyEvents])
+
     const handleSearchChange = (e) => {
         setSearchField(e.target.value);
     }
@@ -51,15 +70,64 @@ const Homepage = (props) => {
     let newText = text.replace(new RegExp(searchField, "gi"), match => `<mark>${match}</mark>`);
     container.innerHTML = newText
     }
+
+    const handleNextPagination = () => {
+        setInitialPagination(prevState => {
+            if(prevState === (pagination.length)) return prevState;
+
+            return prevState + 1;
+        });
+    }
+
+    const handleNextPagination2 = () => {
+        setInitialPagination2(prevState => {
+            if(prevState === (pagination.length)) return prevState;
+
+            return prevState + 1;
+        });
+    }
+
+    const handlePrevPagination = () => {
+        setInitialPagination(prevState => {
+            if(prevState === 1) return prevState;
+
+            return prevState - 1;
+        });
+    }
+
+    const handlePrevPagination2 = () => {
+        setInitialPagination2(prevState => {
+            if(prevState === 1) return prevState;
+
+            return prevState - 1;
+        });
+    }
+
+    const handleFirstPagination = () => setInitialPagination(1);
+    const handleFirstPagination2 = () => setInitialPagination2(1);
+
+    const handleLastPagination = () => setInitialPagination(pagination.length);
+    const handleLastPagination2 = () => setInitialPagination2(pagination.length);
+
+    const handlePaginationNumberClick = (number) => setInitialPagination(number);
+    const handlePaginationNumberClick2 = (number) => setInitialPagination2(number);
+    
+
+    const indexOfLastRow = initialPagination * numberOfRowsToShow;
+    const indexOfLastRow2 = initialPagination2 * numberOfRowsToShow;
+
+    const indexOfFirstRow = indexOfLastRow - numberOfRowsToShow;
+    const indexOfFirstRow2 = indexOfLastRow2 - numberOfRowsToShow;
+
     return (
-        <div>
+        <div className="container">
         {
             ((dailyEvents !== null) && (hourlyEvents !== null) && (statsDaily !== null) && (statsHourly !== null) && (poi !== null)) ? (
                 <Fragment>
                     <div className="homepage-search-container">
                         <input type="search" placeholder="Search through Poi..." onChange={handleSearchChange} value={searchField} />
                     </div>
-                <table>
+                <Table bordered>
                     <thead>
                         <tr>
                         <th colSpan={4} style={{textAlign: "center"}}>Poi</th>
@@ -67,7 +135,6 @@ const Homepage = (props) => {
                     </thead>
                     <tbody>
                     <tr>
-                        <th>Sr No</th>
                         <th>Name</th>
                         <th>Latitude</th>
                         <th>Longitude</th>
@@ -75,7 +142,6 @@ const Homepage = (props) => {
                     {
                         searchedPoi && searchedPoi.map((entry, idx) => (
                         <tr key={entry.poi_id} ref={el => searchedNameRowRef.current[idx] = el}>
-                            <td> {idx + 1} </td>
                             <td ref={el => searchedNameRef.current[idx] = el}>{entry.name}</td>
                             <td>{entry.lat}</td>
                             <td> {entry.lon} </td>
@@ -83,13 +149,10 @@ const Homepage = (props) => {
                         ))
                     }
                     </tbody>
-                </table>
-                <Link to="/map" style={{marginTop: "1rem", display: "block"}}>
-                    <CustomButton title={"See Geo Visual Representation of POI'S"} type={`button`} />
-                </Link>
+                </Table>
                 <div className="homepage-table-container">
                     <div className="homepage-table-sub-container">
-                        <table>
+                        <Table bordered>
                         <thead>
                             <tr>
                             <th colSpan={3} style={{textAlign: "center"}}>Daily Events</th>
@@ -97,28 +160,23 @@ const Homepage = (props) => {
                         </thead>
                         <tbody>
                         <tr>
-                            <th>Sr No</th>
                             <th>Date & Time</th>
                             <th>Events</th>
                         </tr>
                         {
                             dailyEvents && dailyEvents.map((entry, idx) => (
                             <tr key={idx}>
-                                <td> {idx + 1} </td>
-                                <td> {dateAndTime(entry.date, false)} </td>
+                                <td> {date(entry.date)} </td>
                                 <td>{entry.events}</td>
                             </tr>
                             ))
                         }
                         </tbody>
-                        </table>
-                        <Link to="/events/daily">
-                            <CustomButton title={"See Visual Representation of Daily Events"} type={`button`} />
-                        </Link>
+                        </Table>
                     </div>
 
                     <div className="homepage-table-sub-container">
-                        <table>
+                        <Table bordered>
                         <thead>
                             <tr>
                             <th colSpan={5} style={{textAlign: "center"}}>Daily Stats</th>
@@ -126,7 +184,6 @@ const Homepage = (props) => {
                         </thead>
                         <tbody>
                         <tr>
-                            <th>Sr No</th>
                             <th>Date & Time</th>
                             <th>Impressions</th>
                             <th>Clicks</th>
@@ -135,27 +192,34 @@ const Homepage = (props) => {
                         {
                             statsDaily && statsDaily.map((entry, idx) => (
                             <tr key={idx}>
-                                <td> {idx + 1} </td>
-                                <td>{dateAndTime(entry.date, false)}</td>
+                                <td>{date(entry.date)}</td>
                                 <td>{entry.impressions}</td>
                                 <td>{entry.clicks}</td>
-                                <td> {entry.revenue} </td>
+                                <td> {Math.floor(entry.revenue)} </td>
                             </tr>
                             ))
                         }
                         </tbody>
-                        </table>
-                        <Link to="/stats/daily">
-                            <CustomButton title={"See Visual Representation of Daily Stats"} type={`button`} />
-                        </Link>
+                        </Table>
                     </div>
 
                 </div>
-    
+                        
     
                 <div className="homepage-table-container" id="homepage-table-container">
                     <div className="homepage-table-sub-container">
-                        <table>
+                        <div className="text-center">
+                            <Pagination 
+                                handleFirstPagination={handleFirstPagination}
+                                handlePrevPagination={handlePrevPagination}
+                                pagination={pagination}
+                                initialPagination={initialPagination}
+                                handlePaginationNumberClick={handlePaginationNumberClick}
+                                handleNextPagination={handleNextPagination}
+                                handleLastPagination={handleLastPagination}
+                            />
+                        </div>
+                        <Table bordered>
                         <thead>
                             <tr>
                             <th colSpan={5} style={{textAlign: "center"}}>Hourly Events</th>
@@ -163,30 +227,36 @@ const Homepage = (props) => {
                         </thead>
                         <tbody>
                         <tr>
-                            <th>Sr No</th>
                             <th>Date & Time</th>
                             <th>Events</th>
                             <th>Hours</th>
                         </tr>
                         {
-                            hourlyEvents && hourlyEvents.map((entry, idx) => (
+                            hourlyEvents && hourlyEvents.slice(indexOfFirstRow, indexOfLastRow).map((entry, idx) => (
                             <tr key={idx}>
-                                <td> {idx + 1} </td>
-                                <td>{dateAndTime(entry.date, false)}</td>
+                                <td>{date(entry.date)}</td>
                                 <td>{entry.events}</td>
                                 <td> {entry.hour} </td>
                             </tr>
                             ))
                         }
                         </tbody>
-                        </table>
-                        <Link to="/events/hourly">
-                            <CustomButton title={"See Visual Representation of Hourly Events"} type={`button`} />
-                        </Link>
+                        </Table>
                     </div>
                     
                     <div className="homepage-table-sub-container">
-                        <table>
+                        <div className="text-center">
+                            <Pagination 
+                                handleFirstPagination={handleFirstPagination2}
+                                handlePrevPagination={handlePrevPagination2}
+                                pagination={pagination2}
+                                initialPagination={initialPagination2}
+                                handlePaginationNumberClick={handlePaginationNumberClick2}
+                                handleNextPagination={handleNextPagination2}
+                                handleLastPagination={handleLastPagination2}
+                            />
+                        </div>
+                        <Table bordered>
                         <thead>
                             <tr>
                             <th colSpan={6} style={{textAlign: "center"}}>Hourly Stats</th>
@@ -194,7 +264,6 @@ const Homepage = (props) => {
                         </thead>
                         <tbody>
                         <tr>
-                            <th>Sr No</th>
                             <th>Date & Time</th>
                             <th>Impressions</th>
                             <th>Clicks</th>
@@ -202,22 +271,18 @@ const Homepage = (props) => {
                             <th>Hours</th>
                         </tr>
                         {
-                            statsHourly && statsHourly.map((entry, idx) => (
+                            statsHourly && statsHourly.slice(indexOfFirstRow2, indexOfLastRow2).map((entry, idx) => (
                             <tr key={idx}>
-                                <td> {idx + 1} </td>
-                                <td>{dateAndTime(entry.date, false)}</td>
+                                <td>{date(entry.date)}</td>
                                 <td>{entry.impressions}</td>
                                 <td>{entry.clicks}</td>
-                                <td> {entry.revenue} </td>
+                                <td> {Math.floor(entry.revenue)} </td>
                                 <td> {entry.hour} </td>
                             </tr>
                             ))
                         }
                         </tbody>
-                        </table>
-                        <Link to="/stats/hourly">
-                            <CustomButton title={"See Visual Representation of Hourly Stats"} type={`button`} />
-                        </Link>
+                        </Table>
                     </div>
 
 

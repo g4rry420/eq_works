@@ -1,4 +1,4 @@
-import React,{ useRef, useState, useCallback, useEffect } from 'react'
+import React,{ useRef, useState, useCallback, useEffect, useLayoutEffect } from 'react'
 import { connect } from "react-redux"
 import useSupercluster from "use-supercluster"
 import MapGl, { FlyToInterpolator,
@@ -59,7 +59,7 @@ const MapBox = (props) => {
 
   const [popupDisplay, setPopupDisplay] = useState(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
       if(statsHourly && poi && !error){
       let data = [];
       poi.forEach(poi => {
