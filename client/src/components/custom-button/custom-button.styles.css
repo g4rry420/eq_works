@@ -17,13 +17,13 @@
     cursor: pointer;
 }
 .custom-button{
-    background-color: powderblue;  
+    background-color: white;  
     color: black;
     transition: var(--mainTransition);
-    border: 1px solid powderblue;
+    border: 1px solid black;
     font-weight: 600;
 }
 .custom-button:hover {
-    background: transparent;
-    color: powderblue;
+    background: black;
+    color: white;
 }

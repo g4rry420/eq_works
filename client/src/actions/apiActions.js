@@ -1,5 +1,5 @@
 import API from "../API"
-import { GET_DAILY_EVENTS, GET_HOURLY_EVENTS, GET_STATS_DAILY, GET_STATS_HOURLY, GET_POI, ERROR } from "./types"
+import { GET_DAILY_EVENTS, GET_HOURLY_EVENTS, GET_STATS_DAILY, GET_STATS_HOURLY, GET_POI, ERROR, GET_STATS_DAILY_CHART } from "./types"
 
 export const getDailyEventsAsync = () => {
     return dispatch => {
@@ -72,5 +72,20 @@ export const getPoiAsync = () => {
                 dispatch(({ type: GET_POI, payload: data }))
             })
             .catch(err => console.log("ACTION ERROR getPoiAsync ", err))
+    }
+}
+
+export const getStatsDailyChartAsync = () => {
+    return dispatch => {
+        fetch(`${API}/stats/daily/chart`)
+        .then(response => response.json())
+        .then(data => {
+            if(data.error){
+               return dispatch({ type: ERROR, payload: data.error })
+            }else{
+               return dispatch(({ type: GET_STATS_DAILY_CHART, payload: data }))
+            }
+        })
+        .catch(err => console.log("ACTION ERROR getStatsHourlyAsync ", err))
     }
 }
