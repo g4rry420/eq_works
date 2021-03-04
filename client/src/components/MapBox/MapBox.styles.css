@@ -1,22 +1,75 @@
 .marker-input-container input{
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .cluster-marker {
-    color: #fff;
-    background: rgb(148, 133, 133);
-    border-radius: 50%;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+  color: #fff;
+  background: rgb(148, 133, 133);
+  border-radius: 50%;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
   
-  .crime-marker {
-    background: none;
-    border: none;
-  }
-  
-  .crime-marker img {
-    width: 25px;
-  }
+.crime-marker {
+  background: none;
+  border: none;
+}
+
+.crime-marker img {
+  width: 25px;
+}
+
+.select-container select{
+  margin-left: 6rem;
+}
+.calender-container label:nth-child(1), .hour-container label:nth-child(1){
+  width: 74px;
+}
+.select-container h4, .date-hour-container h4{
+  font-size: 2rem;
+}
+.calender-container, .hour-container{
+  display: flex;
+  justify-content: space-around;
+}
+.calender-container label, .calender-container input, .hour-container label, .hour-container input{
+  display: block;
+  font-size: 1rem;
+}
+
+/* Circle starts here */
+
+#poi-color{
+  background: rgb(148, 133, 133);
+}
+#point-color{
+  background: #6AC47E;
+}
+.circle {
+  display: inline-block;
+  border-radius: 50%;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 5px;
+  color: white;
+  text-align: center;
+  line-height: 1;
+  box-sizing: content-box;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.circle:before {
+  content: "";
+  display: inline-block;
+  vertical-align: middle;
+  padding-top: 100%;
+  height: 0;
+}
+.circle span {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+/* Cirlce ends here */

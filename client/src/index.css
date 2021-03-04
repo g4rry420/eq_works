@@ -6,6 +6,11 @@ body{
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
+    font-size: 62.5%;
+    overflow-x: hidden !important;
+}
+mark{
+    padding: 0;
 }
 button{
     outline: none;
@@ -34,18 +39,18 @@ select:focus{
     box-shadow: none;
 }
 
-table{
+/* table{
     width: 100%;
     border-collapse: collapse;
     border-spacing: 0px 100px;
 }
-tr:nth-child(even){
-    background-color: powderblue;
-}
 td,th{
-    border: 1px solid turquoise;
+    border: 1px solid black;
     padding: 10px;
 }
 td{
     text-align: left;
+} */
+mark{
+    background-color: yellow;
 }

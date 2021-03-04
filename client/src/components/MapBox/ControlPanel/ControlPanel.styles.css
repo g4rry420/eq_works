@@ -12,7 +12,11 @@
     color: #6b6b76;
     text-transform: uppercase;
     outline: none;
+    text-align: left;
 }
-.control-panel input{
+.control-panel .input{
     cursor: pointer;
+    display: flex;
+    justify-content: flex-start;
+    align-items: baseline;
 }
