@@ -22,18 +22,19 @@ function Header() {
                     <div className="nav-menu" ref={toggleNavbar}>
                         <ul className="nav-list">
                             <li className="list-menu"><Link  to="/" className="icon-link icon-2">Home</Link></li>
-                            <li className="list-menu "><Link  to="/map"  className="icon-link icon-2">Map</Link></li>)
+                            <li className="list-menu "><Link  to="/map"  className="icon-link icon-2">Map</Link></li>
+                            <li className="list-menu"><Link  to="/events"  className="icon-link icon-2">Events</Link></li> 
+                            <li className="list-menu"><Link  to="/stats"  className="icon-link icon-2">Statistics</Link></li>
                         </ul>
                     </div>
                 </div>
             </div>
 
-            <ul className="nav-list-desktop d-flex links justify-between">
+            <ul className="nav-list-desktop d-flex links justify-around">
                 <li className="list-menu-desktop"><Link  to="/" className="icon-link icon-2">Home</Link></li>
                 <li className="list-menu-desktop"><Link  to="/map"  className="icon-link icon-2">Map</Link></li>
-                <li className="list-menu-desktop"><Link  to="/events/daily"  className="icon-link icon-2">Daily&nbsp;Events</Link></li> 
-                <li className="list-menu-desktop"><Link  to="/stats/daily"  className="icon-link icon-2">Daily&nbsp;Stats</Link></li> 
-                <li className="list-menu-desktop"><Link  to="/events/hourly"  className="icon-link icon-2">Hourly&nbsp;Events</Link></li> 
+                <li className="list-menu-desktop"><Link  to="/events"  className="icon-link icon-2">Events</Link></li> 
+                <li className="list-menu-desktop"><Link  to="/stats"  className="icon-link icon-2">Statistics</Link></li> 
             </ul>
         </nav>
         </div>

@@ -1,11 +1,31 @@
 import React,{ useEffect, useRef, Fragment, useState } from 'react'
 import { connect } from 'react-redux';
 import { Table } from "react-bootstrap"
+import { motion } from "framer-motion"
 
 import "./Homepage.styles.css"
 import { date } from "../../dateAndTime"
 import Spinner from "../spinner/spinner.component"
 import Pagination from "../Pagination/Pagination.component"
+
+const containerVariants = {
+    hidden: {
+        opacity: 0
+    },
+    visible: {
+        opacity: 1,
+        transition: {
+        delay: 0.5,
+        duration: 1
+        }
+    },
+    exit: {
+        x: "-100vw",
+        transition: {
+        ease: "easeInOut"
+        }
+    }
+}
 
 const Homepage = (props) => {
     const [searchField, setSearchField] = useState("");
@@ -120,10 +140,24 @@ const Homepage = (props) => {
     const indexOfFirstRow2 = indexOfLastRow2 - numberOfRowsToShow;
 
     return (
-        <div className="container">
+        <div className="container homepage-container"
+        >
+            <motion.div className="my-5 text-center"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            >
+                <h1>Welcome to EQ Works 😎</h1>
+            </motion.div>
         {
             ((dailyEvents !== null) && (hourlyEvents !== null) && (statsDaily !== null) && (statsHourly !== null) && (poi !== null)) ? (
-                <Fragment>
+                <motion.div  
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                >
                     <div className="homepage-search-container">
                         <input type="search" placeholder="Search through Poi..." onChange={handleSearchChange} value={searchField} />
                     </div>
@@ -287,7 +321,7 @@ const Homepage = (props) => {
 
 
                 </div>
-                </Fragment>
+                </motion.div>
               ) : error ? <p style={{textAlign: "center"}}> {error} </p> : <Spinner/>
         }            
         </div>

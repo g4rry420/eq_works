@@ -16,12 +16,12 @@
 #homepage-table-container table:nth-child(1){
     width: 100%;
 }
-.homepage-table-container table:first-child{
+/* .homepage-table-container table:first-child{
     margin-right: 2rem;
 }
 .homepage-table-container table:last-child{
     margin-left: 2rem;
-}
+} */
 .homepage-search-container{
     margin: 2rem 0;
 }
@@ -36,17 +36,19 @@
     color:black;
     background-color: #fff;
     background-clip: padding-box;
-    border: 1px solid powderblue;
+    border: 1px solid black;
     border-radius: .25rem;
     outline: none;
 }
-
 .homepage-search-container input:focus{
-    border: 1px solid powderblue;
-    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+    box-shadow: 0 0 0 0.2rem rgba(9, 9, 9, 0.25);
 }
 .homepage-row-bg-color{
     background-color: lemonchiffon !important;
+}
+
+.homepage-container th, .homepage-container td{
+    font-size: 1rem;
 }
 
 @media only screen and (max-width: 700px){

@@ -1,21 +1,40 @@
-import React,{ useState, useLayoutEffect, useRef } from 'react'
+import React,{ useLayoutEffect, useRef } from 'react'
 import { connect } from 'react-redux';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+import { motion } from "framer-motion"
 
-// import LineGraph from "../LineGraph/LineGraph.component"
 import { dateAndTime } from "../../dateAndTime"
-// import Spinner from "../spinner/spinner.component"
+import Spinner from "../spinner/spinner.component"
+import "./EventsDaily.styles.css"
 
 am4core.useTheme(am4themes_animated);
 
+
+const containerVariants = {
+  hidden: {
+      opacity: 0
+  },
+  visible: {
+      opacity: 1,
+      transition: {
+      delay: 1.5,
+      duration: 1.5
+      }
+  },
+  exit: {
+      x: "-100vw",
+      transition: {
+      ease: "easeInOut"
+      }
+  }
+}
 
 function EventsDaily(props) {
     const { dailyEvents, error } = props;
     const chart = useRef(null);
 
-    // const [type, setType] = useState("bar");
 
     useLayoutEffect(() => {
       if(!!!dailyEvents) return;
@@ -108,23 +127,23 @@ function EventsDaily(props) {
       image.verticalCenter = "middle";
       image.propertyFields.href = "href";
 
-      image.adapter.add("mask", function(mask, target) {
+      image.adapter.add("mask", (mask, target) => {
         let circleBullet = target.parent;
         return circleBullet.circle;
       });
 
       let previousBullet;
-      x.cursor.events.on("cursorpositionchanged", function(event) {
+      x.cursor.events.on("cursorpositionchanged", (event) => {
         let dataItem = series.tooltipDataItem;
 
         if (dataItem.column) {
           let bullet = dataItem.column.children.getIndex(1);
 
-          if (previousBullet && previousBullet != bullet) {
+          if (previousBullet && previousBullet !== bullet) {
             previousBullet.isHover = false;
           }
 
-          if (previousBullet != bullet) {
+          if (previousBullet !== bullet) {
             let hs = bullet.states.getKey("hover");
             hs.properties.dy = -bullet.parent.pixelHeight + 30;
             bullet.isHover = true;
@@ -140,48 +159,27 @@ function EventsDaily(props) {
       return () => x.dispose();
     },[dailyEvents])
 
-    // const labels = [];
-    // const events = [];
-    // if(dailyEvents && !error){
-    //   for (let index = 0; index < dailyEvents.length; index++) {
-    //     const element = dailyEvents[index];
-    //     labels.push(dateAndTime(element.date, false))
-    //     events.push(element.events)
-    //   }
-    // }else if(error){
-    //   console.log(error)
-    // }
-
-    // const handleChartOptionChange = (e) => {
-    //   setType(e.target.value);
-    // }
-
 
     return (
-        <div className="container text-center">
-         {/* <select name="charts" id="charts" onChange={handleChartOptionChange} value={type}>
-            <option value="line">Line</option>
-            <option value="bar" >Bar</option>
-            <option value="horizontalBar">Horizontal Bar</option>
-            <option value="radar">Radar</option>
-            <option value="pie">Pie</option>
-            <option value="doughnut">Doughnut</option>
-          </select>
+        <div className="text-center mb-5">
+          <motion.h4 className="display-4 my-5"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          >Daily Events</motion.h4>
         {
-            events.length ? (
-            <LineGraph 
-                type={type}
-                titleText={`Daily Events between 2016-2017`}
-                labels={labels} 
-                data={[events]} 
-                labelHeading={[`Events `]} />
-            ) : error ? <p style={{textAlign: "center"}}> {error} </p> : <Spinner/>
-          } */}
-
-          <h4 className="display-4 my-5">Events Daily</h4>
-          <div className="text-center">
-            <div id="chartdiv" style={{ width: "100%", height: "500px" }}></div>
-          </div>
+          dailyEvents ? (
+            <motion.div className="text-center"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            >
+              <div id="chartdiv" style={{ width: "100%", height: "500px" }}></div>
+            </motion.div>
+          ) : error ? <p style={{textAlign: "center"}}> {error} </p> : <Spinner/>
+        }
         </div>
     )
 }

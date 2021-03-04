@@ -25,9 +25,9 @@ export const date = (apiDate) => {
 export const getDay = (apiDate) => {
     const receivedDate = new Date (Date.parse(apiDate));
     const day = Days[receivedDate.getDay()];
-    const month = shorterYearLabels[receivedDate.getMonth()]
-    const dayOfMonth = (receivedDate.getDate()).toString().length === 1 ?
-        `0${receivedDate.getDate()}` : 
-        receivedDate.getDate();
+    // const month = shorterYearLabels[receivedDate.getMonth()]
+    // const dayOfMonth = (receivedDate.getDate()).toString().length === 1 ?
+    //     `0${receivedDate.getDate()}` : 
+    //     receivedDate.getDate();
     return `${day}`;
 }

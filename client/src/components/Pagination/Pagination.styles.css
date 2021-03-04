@@ -1,3 +1,6 @@
+.pagination-container {
+    font-size: 1rem;
+}
 .pagination-container .page-link{
     color: black;
 }

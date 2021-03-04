@@ -1,24 +1,21 @@
-import React, { useEffect, Suspense, lazy } from 'react'
+import React, { useEffect } from 'react'
 import { connect } from "react-redux"
-import { Route, Switch } from "react-router-dom"
-
+import { Route, Switch, useLocation } from "react-router-dom"
+import { AnimatePresence } from "framer-motion"
 
 import './App.css';
 import { getDailyEventsAsync, getHourlyEventsAsync, getStatsDailyAsync, getStatsHourlyAsync, getPoiAsync } from "./actions/apiActions"
 import ErrorBoundary from "./components/error-boundary/error-boundary.component"
-import Spinner from './components/spinner/spinner.component';
 import Header from "./components/Header/header.component"
+import MapBox from "./components/MapBox/MapBox.component"
+import Stats from "./components/Stats/Stats.component"
+import Events from "./components/Events/Events.component"
+import Homepage from "./components/Homepage/Homepage.component"
 
-const MapBox = lazy(() => import("./components/MapBox/MapBox.component"));
-const StatsHourly = lazy(() => import("./components/StatsHourly/StatsHourly.component"));
-const StatsDaily = lazy(() => import("./components/StatsDaily/StatsDaily.component"));
-const EventsDaily = lazy(() => import("./components/EventsDaily/EventsDaily.component"))
-const EventsHourly = lazy(() => import("./components/EventsHourly/EventsHourly.component"))
-const Homepage = lazy(() => import("./components/Homepage/Homepage.component"));
 
 function App(props) {
   const { getDailyEventsAsync, getHourlyEventsAsync, getStatsDailyAsync, getStatsHourlyAsync, getPoiAsync  } = props;
-
+  const location = useLocation();
   useEffect(() => {
     getDailyEventsAsync()
     getHourlyEventsAsync()
@@ -31,19 +28,14 @@ function App(props) {
     <div className="App">
       <ErrorBoundary>
         <Header/>
-        {/*<div className="app-heading">
-          <h1>Welcome to EQ Works 😎</h1>
-  </div>*/}
-        <Suspense fallback={<Spinner/>}>
-          <Switch>
-            <Route exact path="/" component={Homepage} />
-            <Route exact path="/events/daily" component={EventsDaily} />
-            <Route exact path="/events/hourly" component={EventsHourly} />
-            <Route exact path="/stats/daily" component={StatsDaily} />
-            <Route exact path="/stats/hourly" component={StatsHourly} />
-            <Route exact path="/map" component={MapBox} />
-          </Switch>
-        </Suspense>
+        <AnimatePresence exitBeforeEnter>
+            <Switch location={location} key={location.key} >
+              <Route exact path="/" component={Homepage} />
+              <Route exact path="/events" component={Events} />
+              <Route exact path="/stats" component={Stats} />
+              <Route exact path="/map" component={MapBox} />
+            </Switch>
+        </AnimatePresence>
       </ErrorBoundary>
     </div>
   );

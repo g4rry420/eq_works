@@ -1,10 +1,14 @@
 .events-hourly-container .date-container{
     display: flex;
-  justify-content: space-evenly;
+    justify-content: space-evenly;
 }
 .date-range{
     font-size: 2rem;
 }
 .events-hourly-container .date-container label, .events-hourly-container .date-container input{
     display: block;
+    font-size: 1rem;
+}
+#radarChartDivEventsHourly{
+    font-size: 1rem;
 }

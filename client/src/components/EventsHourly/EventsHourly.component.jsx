@@ -1,25 +1,40 @@
-import React,{ useLayoutEffect, useState } from 'react';
+import React,{ useLayoutEffect, useState, Fragment } from 'react';
 import { connect } from 'react-redux';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+import { motion } from "framer-motion"
 
 import "./EventsHourly.styles.css"
-// import LineGraph from "../LineGraph/LineGraph.component"
 import { date as modifiedDate, getDay } from "../../dateAndTime"
-// import Spinner from "../spinner/spinner.component"
+import Spinner from "../spinner/spinner.component"
 
 am4core.useTheme(am4themes_animated);
+
+const containerVariants = {
+  hidden: {
+      opacity: 0
+  },
+  visible: {
+      opacity: 1,
+      transition: {
+      delay: 1.5,
+      duration: 1.5
+      }
+  },
+  exit: {
+      x: "-100vw",
+      transition: {
+      ease: "easeInOut"
+      }
+  }
+}
 
 const EventsHourly = (props) => {
   const { hourlyEvents, error } = props;
 
   const [fromDateValue, setFromDateValue] = useState("2016-12-31");
   const [toDateValue, setToDateValue] = useState("2017-01-06");
-
-  // const eventsHourlyEvents = []
-  // const eventsHourlyLabels = []
-  // const eventsHourlyHour = []
 
   useLayoutEffect(() => {
     if(!!!hourlyEvents) return;
@@ -52,7 +67,7 @@ const EventsHourly = (props) => {
     let currentYear = 2017;
     let colorSet = new am4core.ColorSet();
 
-    let chart = am4core.create("chartdiv", am4charts.RadarChart);
+    let chart = am4core.create("radarChartDivEventsHourly", am4charts.RadarChart);
     chart.hiddenState.properties.opacity = 0;
 
     chart.startAngle = 270 - 180;
@@ -259,7 +274,7 @@ const EventsHourly = (props) => {
     }
 
     function updateRadarData(year) {
-      if (currentYear != year) {
+      if (currentYear !== year) {
         currentYear = year;
         yearLabel.text = String(currentYear);
         series.dataFields.valueY = "value" + currentYear;
@@ -284,17 +299,6 @@ const EventsHourly = (props) => {
 
   },[hourlyEvents, fromDateValue, toDateValue])
 
-  // if(hourlyEvents && !error) {
-  //   for (let index = 0; index < hourlyEvents.length; index++) {
-  //     const element = hourlyEvents[index];
-  //     eventsHourlyEvents.push(element.events);
-  //     eventsHourlyLabels.push(dateAndTime(element.date, true))
-  //     eventsHourlyHour.push(element.hour);
-  //   }
-  // }else if(error){
-  //   console.log(error)
-  // }
-
   const handleFromDateChange = (e) => {
     setFromDateValue(e.target.value)
   }
@@ -306,38 +310,40 @@ const EventsHourly = (props) => {
   const maxDate = hourlyEvents && modifiedDate(hourlyEvents[hourlyEvents.length-1].date);
 
   return (
-    <div className="container events-hourly-container">
-      {/*<div>
-        <select name="charts" id="charts">
-          <option value="line">Line</option>
-        </select>
-      {
-        eventsHourlyLabels.length ? (
-          <LineGraph 
-            type={"line"}
-            titleText={`Hourly Events between 2016-2017`}
-            labels={eventsHourlyLabels}
-            labelHeading={[`Events `, `Hours  `]}
-            data={[eventsHourlyEvents, eventsHourlyHour]} />
-        ) : error ? <p style={{textAlign: "center"}}> {error} </p> : <Spinner/>
-      }*/}
+    <div className="events-hourly-container mt-5">
       <div className="row">
         <div className="col-md-12">
           <div className="text-center my-3">
-            <h4 className="display-4">Events Hourly</h4>
+            <motion.h4 className="display-4"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            >Hourly Events</motion.h4>
           </div>
-          <h4 className="display-4 date-range">Select Your Date Range:</h4>
-          <div className="date-container my-3">
-            <label htmlFor="fromDate" className="">From Date</label>
-            <input type="date" name="fromDate" id="fromDate" min="2016-12-31" max={maxDate} value={fromDateValue} onChange={handleFromDateChange}   />
-          </div>
-          <div className="date-container my-3">
-            <label htmlFor="toDate" className="">To Date</label>
-            <input id="toDate" type="date" name="toDate" min="2016-12-31" max={maxDate} value={toDateValue} onChange={handleToDateChange} />
-          </div>
-          <div className="text-center mt-4">
-            <div id="chartdiv" style={{ width: "100%", height: "850px" }}></div>
-          </div>
+          {
+            hourlyEvents ? (
+              <motion.Fragment
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              >
+                <h4 className="display-4 date-range">Select Your Date Range:</h4>
+                <div className="date-container my-3">
+                  <label htmlFor="fromDate" className="">From Date</label>
+                  <input type="date" name="fromDate" id="fromDate" min="2016-12-31" max={maxDate} value={fromDateValue} onChange={handleFromDateChange}   />
+                </div>
+                <div className="date-container my-3">
+                  <label htmlFor="toDate" className="">To Date</label>
+                  <input id="toDate" type="date" name="toDate" min="2016-12-31" max={maxDate} value={toDateValue} onChange={handleToDateChange} />
+                </div>
+                <div className="text-center mt-4">
+                  <div id="radarChartDivEventsHourly" style={{ width: "100%", height: "850px" }}></div>
+                </div>
+              </motion.Fragment>
+            ) : error ? <p style={{textAlign: "center"}}> {error} </p> : <Spinner/>
+          }
         </div>
       </div>
     </div>

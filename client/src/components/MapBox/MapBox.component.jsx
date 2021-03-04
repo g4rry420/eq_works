@@ -5,6 +5,7 @@ import MapGl, { FlyToInterpolator,
      Popup, ScaleControl,
     FullscreenControl, NavigationControl, GeolocateControl, Marker } from "react-map-gl"
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { motion } from "framer-motion"
 
 import "./MapBox.styles.css"
 import ControlPanel from "./ControlPanel/ControlPanel.component"
@@ -34,6 +35,27 @@ const scaleControlStyle = {
   left: 0,
   padding: '10px'
 };
+
+
+const containerVariants = {
+  hidden: {
+      opacity: 0
+  },
+  visible: {
+      opacity: 1,
+      transition: {
+      delay: 0.5,
+      duration: 1
+      }
+  },
+  exit: {
+      x: "-100vw",
+      transition: {
+      ease: "easeInOut"
+      }
+  }
+}
+
 
 const positionOptions = {enableHighAccuracy: true};
 
@@ -211,13 +233,24 @@ const MapBox = (props) => {
   const maxDate = statsHourly && date(statsHourly[statsHourly.length-1].date);
   // return map
   return (
-    <div className="container">
+    <div className="container"
+    >
       <div className="row">
         <div className="col-md-12">
-          <div className="text-center my-3">
+          <motion.div className="text-center my-3"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          >
             <h4 className="display-4">Map Visuals</h4>
-          </div>
-          <div className="select-container">
+          </motion.div>
+          <motion.div className="select-container"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          >
             <h4 className="display-4">Select Your Metrics:</h4>
             <select name="charts" id="charts" onChange={handleMapValueChange} value={selectValue}>
               <option value="impressions">Impressions</option>
@@ -225,8 +258,13 @@ const MapBox = (props) => {
               <option value="revenue">Revenue</option>
               <option value="events">Events</option>
             </select>
-          </div>
-          <div className="date-hour-container my-4">
+          </motion.div>
+          <motion.div className="date-hour-container my-4"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          >
             <h4 className="display-4">Select Your Date and Hour Range:</h4>
             <div className="calender-container my-4">
               <label htmlFor="fromDate" className="">From Date</label>
@@ -240,10 +278,15 @@ const MapBox = (props) => {
               <label htmlFor="toHour" className="">Hour</label>
               <input type="number" id="toHour" name="ToHour" min="0" max="23" value={toHourValue} onChange={handleToHourChange} />
             </div>
-          </div>
+          </motion.div>
         {
           ((props.poi !== null) && (props.statsHourly !== null) && (props.error === null)) ? (
-            <div className="map-container">
+            <motion.div className="map-container"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            >
               <MapGl 
               {...viewport} 
               onViewportChange={setViewport}
@@ -277,11 +320,11 @@ const MapBox = (props) => {
                       </Marker>
                     )
                   }else if(cluster.properties[selectValue]){  
-                    const widthAndHeight = cluster.properties[selectValue].toString().length > 5
-                    ? parseInt(cluster.properties[selectValue].toString().substring(0, 3))
-                    : cluster.properties[selectValue].toString().length > 2    
-                    ? parseInt(cluster.properties[selectValue].toString().substring(0, 2))
-                    : point_count
+                    // const widthAndHeight = cluster.properties[selectValue].toString().length > 5
+                    // ? parseInt(cluster.properties[selectValue].toString().substring(0, 3))
+                    // : cluster.properties[selectValue].toString().length > 2    
+                    // ? parseInt(cluster.properties[selectValue].toString().substring(0, 2))
+                    // : point_count
   
                     return (
                       <Marker 
@@ -320,7 +363,7 @@ const MapBox = (props) => {
               <ScaleControl style={scaleControlStyle} />
               <ControlPanel onSelectCity={onSelectCity}  />
             </MapGl>
-          </div>
+          </motion.div>
           ) : props.error ? <p style={{textAlign: "center"}}> {props.error} </p> : <Spinner/>
         }
         </div>

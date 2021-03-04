@@ -1,29 +1,42 @@
-import React,{ useState, useRef, useLayoutEffect } from 'react';
+import React,{ useLayoutEffect } from 'react';
 import { connect } from 'react-redux';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
+import { motion } from "framer-motion"
 
-import LineGraph from "../LineGraph/LineGraph.component"
+import "./StatsDaily.styles.css"
 import { dateAndTime } from "../../dateAndTime"
 import Spinner from "../spinner/spinner.component"
 
 am4core.useTheme(am4themes_animated);
 
+const containerVariants = {
+    hidden: {
+        opacity: 0
+    },
+    visible: {
+        opacity: 1,
+        transition: {
+        delay: 1.5,
+        duration: 1.5
+        }
+    },
+    exit: {
+        x: "-100vw",
+        transition: {
+        ease: "easeInOut"
+        }
+    }
+}
+
 function StatsDaily(props) {
     const { statsDaily, error } = props
-    // const [type, setType] = useState("bar");
-
-    // const statsDailyLabels = [];
-    // const statsDailyImpressions = [];
-    // const statsDailyClicks = [];
-    // const statsDailyRevenue = [];
-
 
     useLayoutEffect(() => {
         if(!!!statsDaily) return;
 
-        const chart = am4core.create("chartdiv", am4charts.XYChart);
+        const chart = am4core.create("chartDivStatsDaily", am4charts.XYChart);
 
         let data = [];
         statsDaily.forEach(stats => {
@@ -93,48 +106,26 @@ function StatsDaily(props) {
         return () =>  chart.dispose();
     }, [statsDaily])
 
-    // if(statsDaily && !error){
-    //     for (let index = 0; index < statsDaily.length; index++) {
-    //         const element = statsDaily[index];
-    //         statsDailyLabels.push(dateAndTime(element.date, false));
-    //         statsDailyImpressions.push(element.impressions);
-    //         statsDailyClicks.push(element.clicks);
-    //         statsDailyRevenue.push(element.revenue);
-    //     }
-    // }else if(error){
-    //     console.log(error)
-    // }
-
-    // const handleChartOptionChange = (e) => {
-    //     setType(e.target.value)
-    // }
-
     return (
-        <div className="container text-center">
-            {/*<select name="charts" id="charts" onChange={handleChartOptionChange} value={type}>
-                <option value="line">Line</option>
-                <option value="bar">Bar</option>
-                <option value="horizontalBar">Horizontal Bar</option>
-                <option value="radar">Radar</option>
-            </select>
+        <div className="text-center mt-5">
+            <motion.h4 className="display-4 my-5"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            >Statistics per Week</motion.h4>
         {
-            statsDailyLabels.length ? (
-                <LineGraph 
-                    type={type}
-                    titleText={`Daily Stats between 2016-2017`}
-                    labels={statsDailyLabels}
-                    labelHeading={[`Clicks`, `Impressions`, `Revenue`]}
-                    data={[statsDailyClicks, statsDailyImpressions, statsDailyRevenue]} />
-
-
-
+            statsDaily ? (
+                <motion.div className="text-center"
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                >
+                    <div id="chartDivStatsDaily" style={{ width: "95%", height: "500px" }}></div>
+                </motion.div>
             ) : error ? <p style={{textAlign: "center"}}> {error} </p> : <Spinner/>
-        }*/}
-        <h4 className="display-4 my-5">Stats Daily</h4>
-        <div className="text-center">
-            <div id="chartdiv" style={{ width: "95%", height: "500px" }}></div>
-        </div>
-
+        }
         </div>
     )
 }

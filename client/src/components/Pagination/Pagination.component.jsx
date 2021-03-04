@@ -24,8 +24,8 @@ const PaginationComponent = (props) => {
                         return <Pagination.Item key={idx} active> {entry} </Pagination.Item>
                     }else if(initialPagination === 5 && entry === 2){
                         return <Pagination.Ellipsis key={idx} />
-                    }else if(initialPagination >= 6 && entry === 2) return;
-                    else if((initialPagination === 5 && entry === 3) || (initialPagination >= 6 && entry === 3)) return;
+                    }else if(initialPagination >= 6 && entry === 2) return undefined;
+                    else if((initialPagination === 5 && entry === 3) || (initialPagination >= 6 && entry === 3)) return undefined;
                     else if(initialPagination >= 6 && entry === 4){
                         return <Pagination.Ellipsis key={idx} />
                     }
@@ -46,8 +46,8 @@ const PaginationComponent = (props) => {
                     }else if(initialPagination >= 6 && entry >= 7 && entry <= 8){
                         return  <Pagination.Item key={idx} onClick={() => handlePaginationNumberClick(entry)}> {entry} </Pagination.Item>
                     } 
-                    else if(entry === 7 && initialPagination !== 5) return;
-                    else if(entry === 8 ) return;
+                    else if(entry === 7 && initialPagination !== 5) return undefined;
+                    else if(entry === 8 ) return undefined;
                     else{
                         return (
                             <Pagination.Item key={idx} onClick={() => handlePaginationNumberClick(entry)}> {entry} </Pagination.Item>

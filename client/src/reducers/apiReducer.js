@@ -1,9 +1,10 @@
-import { GET_DAILY_EVENTS, GET_HOURLY_EVENTS, GET_STATS_DAILY, GET_STATS_HOURLY, GET_POI, ERROR } from "../actions/types"
+import { GET_DAILY_EVENTS, GET_HOURLY_EVENTS, GET_STATS_DAILY, GET_STATS_HOURLY, GET_POI, ERROR, GET_STATS_DAILY_CHART } from "../actions/types"
 
 const INITIALSTATE = {
     dailyEvents: null,
     hourlyEvents: null,
     statsDaily: null,
+    statsDailyChart: null,
     statsHourly: null,
     poi: null,
     error: null
@@ -35,6 +36,11 @@ const apiReducer = (state = INITIALSTATE, action) => {
             return {
                 ...state,
                 poi: action.payload
+            }
+        case GET_STATS_DAILY_CHART:
+            return {
+                ...state,
+                statsDailyChart: action.payload
             }
         case ERROR:
             return{

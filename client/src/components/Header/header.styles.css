@@ -8,7 +8,8 @@
 }
 .links a {
     color: black;
-    font-weight: 600;
+    font-weight: 300;
+    font-size: 1rem;
 }
 .links a:hover {
     text-decoration: underline;
@@ -44,7 +45,7 @@
     z-index: 1;
 }
 .burger:hover{
-    background: var(--mainBlack);
+    background: black;
 }
 .menu-open{
     width: 100%;
@@ -66,7 +67,7 @@
     top: 10px;
     width: 30px;
     height: 2px;
-    background: var(--primaryColor);
+    background: black;
     transition: var(--ease_in_out);
 }
 .hamburger::before{
@@ -76,7 +77,7 @@
     height: 2px;
     top: -10px;
     left: 0;
-    background: var(--primaryColor);
+    background: black;
     transition: var(--ease_in_out);
 }
 .hamburger::after{
@@ -86,7 +87,7 @@
     height: 2px;
     top: -20px;
     left: 0;
-    background: var(--primaryColor);
+    background: black;
     transition: var(--ease_in_out);
 }
 .menu-open:checked + .patty + .hamburger{
@@ -104,13 +105,13 @@
 .nav-menu{
     position: relative;
     width: 100px;
-    background: var(--primaryColor);
+    background: black;
     height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: var(--ease_in_out);
-    top: -559px;
+    top: -1000px;
 }
 .nav-menu .nav-list {
     width: 100%;
